@@ -1,7 +1,8 @@
+from genericpath import isdir
 import os
-
-def main(model_name, tokenizer='facebook/bart-large', gpu_id=0,
+def run_script(task, model_name, modelcate='large', tokenizer='facebook/bart-large', gpu_id=0,
          datacate='examples', data_dir=None, train_data_file=None, eval_data_file=None, test_data_file=None):
+
   args = {}
   root_dir = os.getcwd()
   output_dir_name = 'outputs/Eval'+datacate+'-AMRBART'
@@ -61,6 +62,7 @@ def main(model_name, tokenizer='facebook/bart-large', gpu_id=0,
   args['eval_num_workers']=4
   args['process_num_workers']=1
   args['early_stopping_patience']=0
+     
   args['lr_scheduler']="linear"
   args['learning_rate']=5e-5
   args['weight_decay']=0.0
@@ -72,6 +74,21 @@ def main(model_name, tokenizer='facebook/bart-large', gpu_id=0,
   args['save_interval']=-1
   args['resume']="store_true"
 
-
-  inference_amr(args)
-
+  if task == 'inference_amr':
+    inference_amr(args)
+  elif task == 'inference_text':
+    inference_text(args)
+  elif task == 'finetune_amrparsing':
+    if modelcate == 'large':
+      finetune_AMRbart_amrparsing_large(args)
+    else:
+      finetune_AMRbart_amrparsing(args)
+  elif task == 'finetune_amr2text':
+    if modelcate == 'large':
+      finetune_AMRbart_amr2text_large(args)
+    else:
+      finetune_AMRbart_amr2text(args)
+  elif task == 'eval_amrparsing':
+    eval_AMRbart_amrparsing(args)
+  elif task == 'eval_amr2text':
+    eval_AMRbart_amr2text(args)
